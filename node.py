@@ -1,12 +1,20 @@
-M=8
+from copy import deepcopy
+M=3
 XCONSTANT=1
 OCONSTANT=2
 class Node:
     def __init__(self, turn, position, matrix ):
         self.turn = turn
-        self.matrix = matrix
+        self.matrix = deepcopy(matrix)
         self.position = position
-    
+        self.value = []
+
+        self.matrix[position[0]][position[1]] = turn
+
+    # store returned value when using minimax
+    def appendValue(self, value):
+        self.value.append(value)
+
     # return which player to move in this state
     def player(self):
         return self.turn
@@ -24,18 +32,8 @@ class Node:
     
     # check if state is a terminal state
     def terminal(self):
-        #check row and column
-        for i in range(3):
-            if self.matrix[i][0]==self.matrix[i][1]==self.matrix[i][2]!=0:
-                return True
-            
-            if self.matrix[0][i]==self.matrix[1][i]==self.matrix[2][i]!=0:
-                return True
-        
-        #check diagonal
-        if self.matrix[0][0]==self.matrix[1][1]==self.matrix[2][2]!=0:
-            return True
-        if self.matrix[0][0]==self.matrix[1][1]==self.matrix[2][2]!=0:
+        # check if 3 in a row/ column/ diagonal
+        if self.ultility() == 1 or self.ultility() == -1:
             return True
 
         # check full board
@@ -50,23 +48,23 @@ class Node:
     # return node after action(tuple of position) a taken on this state  
     def result(self , a):
         if self.player() == XCONSTANT:
-            self.matrix[a[0]][a[1]] = OCONSTANT
-            node=Node(OCONSTANT,(a[0],a[1]),self.matrix)
+            node=Node(OCONSTANT,a,self.matrix)
         else:
-            self.matrix[a[0]][a[1]] = OCONSTANT
-            node=Node(XCONSTANT,(a[0],a[1]),self.matrix)
-        self.matrix[a[0]][a[1]]=0
+            node=Node(XCONSTANT,a,self.matrix)
         return node
 
     # ultility for terminal state 
     def ultility(self):
         if self.player() == XCONSTANT:
-            score =  1
+            score = 1
         else:
             score = -1
+
         if self.checkRow() or self.checkColumn() or self.checkDiagonal():
             return score
         # draw
+
+                
         return 0
     
     # check at this position, is it 3
@@ -174,6 +172,36 @@ class Node:
                 return True
         return False
 
-        
+def MinValue(node):
+    if node.terminal():
+        return node.ultility()
+    v = 2 # max infinity
+    for nodeAction in node.action():
+        v = min(v,MaxValue(node.result(nodeAction)))
+    return v
 
-        
+def MaxValue(node):
+    if node.terminal():
+        return node.ultility()
+    v = -2 # min infinity
+    for nodeAction in node.action():
+        v = max(v,MinValue(node.result(nodeAction)))
+        node.appendValue(v)
+    return v
+
+def MiniMax_Decision(node):
+    v = MaxValue(node)
+    i=0
+    for nodeAction in node.action():
+        if v == node.value[i]:
+            return nodeAction
+        i+=1
+
+#def test():
+ #   matrix = [[1,2,2],[1,2,1],[0,0,0]]
+ #   n = Node(XCONSTANT,(2,2),matrix)
+  #  print(n.matrix)
+  #  MaxValue(n)
+   # print(n.value)
+
+

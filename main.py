@@ -3,7 +3,7 @@ from pygame.locals import *
 import node
 
 global M 
-M = 8
+M = 3
 #size of matrix
 matrix = [ [ 0 for i in range(M) ] for j in range(M) ]
 
@@ -48,6 +48,8 @@ def main():
     mousex = -1 # used to store x coordinate of mouse event
     mousey = -1 # used to store y coordinate of mouse event
     mouseClicked = False
+
+    turn = OCONSTANT # Player go first
     
     while True: # main game loop
         DISPLAYSURF.fill(WHITE)
@@ -59,46 +61,81 @@ def main():
             elif event.type == MOUSEBUTTONUP:
                 mousex, mousey = event.pos
                 mouseClicked = True
-        
-        if (mouseClicked== True):
-            if mousex > 0 and mousey >0:
-                column = int(mousex/BLOCKSIZE)
-                row = int(mousey/BLOCKSIZE)
-                n = node.Node(OCONSTANT,(row,column),matrix)
-                print(n.ultility())
 
-        drawO(mousex,mousey)
+        if turn == OCONSTANT and mouseClicked:
+            column = int(mousex/BLOCKSIZE)
+            row = int(mousey/BLOCKSIZE)  
+            matrix[row][column] = OCONSTANT
+            # update game state
+            game = node.Node(OCONSTANT,(row,column),matrix)
+            #swap turn
+            if turn == OCONSTANT:
+                turn = XCONSTANT
+            else:
+                turn = OCONSTANT
+            mouseClicked = False
+
+        elif turn == XCONSTANT and not mouseClicked:
+            action = node.MiniMax_Decision(game)
+            row = action[0]
+            column = action[1]
+            matrix[row][column] = XCONSTANT
+            #update game state
+            game = node.Node(XCONSTANT,(row,column),matrix)
+            #swap turn
+            if turn == OCONSTANT:
+                turn = XCONSTANT
+            else:
+                turn = OCONSTANT
+        #########################################################################################
+        # draw x,o to screen
+        draw()
+
         #draw lines
         for i in range(M):
             pygame.draw.line(DISPLAYSURF, BLACK, (0,i*BLOCKSIZE), (WINDOWHEIGHT, i*BLOCKSIZE))
             pygame.draw.line(DISPLAYSURF, BLACK, (i*BLOCKSIZE,0), (i*BLOCKSIZE, WINDOWWIDTH))
-        
         pygame.display.update()
         FPSCLOCK.tick(FPS)
+        #########################################################################################        
+        if mousex > 0 and mousey >0:
+            if game.terminal():
+                if game.ultility() == 1:
+                    print("X wins")
+                elif game.ultility() == -1:
+                    print("O win")
+                else:
+                    print("draw")
+                break
+        
 
-# draw x,o and assign proper value to matrix 
-def drawX(x,y):
+
+# assign proper value to matrix 
+def setX(x,y):
     if x < 0 and y < 0:
         return
     column = int(x/BLOCKSIZE)
     row = int(y/BLOCKSIZE)
     if matrix[row][column]==0:
         matrix[row][column] = XCONSTANT
-    for i in range(M):
-        for j in range(M):
-            if matrix[i][j]==XCONSTANT:
-                DISPLAYSURF.blit(xImg, (j*BLOCKSIZE, i*BLOCKSIZE))
-
-def drawO(x,y):
+def setO(x,y):
     if x < 0 and y < 0:
         return
     column = int(x/BLOCKSIZE)
     row = int(y/BLOCKSIZE)
     if matrix[row][column]==0:
         matrix[row][column] = OCONSTANT
+
+# draw matrix x,o 
+def draw():
     for i in range(M):
         for j in range(M):
+            if matrix[i][j]==XCONSTANT:
+                DISPLAYSURF.blit(xImg, (j*BLOCKSIZE, i*BLOCKSIZE))
             if matrix[i][j]==OCONSTANT:
                 DISPLAYSURF.blit(oImg, (j*BLOCKSIZE, i*BLOCKSIZE))
+
+
+
 
 main()

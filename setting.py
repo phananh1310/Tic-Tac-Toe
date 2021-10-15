@@ -1,9 +1,12 @@
 import pygame
+import math
 
+POSITIVE_INF = math.inf
+NEGATIVE_INF = -math.inf
 #########################
 # score 
-WIN = 100 # positive inf
-LOSE = -WIN # negative inf
+WIN = POSITIVE_INF # positive inf
+LOSE = NEGATIVE_INF # negative inf
 
 ########################
 global M # matrix size

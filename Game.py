@@ -1,9 +1,6 @@
 from copy import deepcopy
 from setting import * 
-import math
 
-POSITIVE_INF = math.inf
-NEGATIVE_INF = -math.inf
 # FUNCTION 
 ##################################
 # MINIMAX algorithm using 

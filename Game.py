@@ -125,6 +125,8 @@ class Game:
         return game
 
     # ultility for terminal state 
+    # IMPORTANT PART
+    ######################################################
     def ultility(self):
         if self.draw:
             return 0
@@ -133,7 +135,7 @@ class Game:
             return WIN
         else:
             return LOSE   
-    
+    #####################################################
     # Return a list based on current positon in a row/ column/ diagonal
     def checkRow(self):
         list = []
@@ -226,15 +228,16 @@ class Game:
 #########################
 # TEST FUNCTION / CLASS
 def test():
-    matrix =[[1,1,2,1],
-             [1,2,1,2],
-             [1,0,2,1],
-             [1,2,0,0]
+    matrix =[[O,X,O,X],
+             [X,X,O,X],
+             [O,O,O,X],
+             [O,O,X,X]
             ]
-    # game start with X in (0,0)
-    game = Game(O,(2,2),matrix)
-
-    print(game.ultility())
-#test()
+    
+    game = Game(X,(3,3),matrix)
+    
+    print(game.terminal())
+    #print(MiniMax_Decision(game))
+test()
 
 ##########################

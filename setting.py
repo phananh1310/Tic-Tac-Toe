@@ -10,9 +10,9 @@ LOSE = NEGATIVE_INF # negative inf
 
 ########################
 global M # matrix size
-M = 3 
+M = 4
 
-SEQ = 3 # number of sequential X/O to win 
+SEQ = 4 # number of sequential X/O to win 
 
 #size of matrix
 matrix = [ [ 0 for i in range(M) ] for j in range(M) ]
